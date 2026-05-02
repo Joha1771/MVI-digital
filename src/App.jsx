@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import Navbar from "./components/Navbar";
-import Hero from "./components/Hero";
-import About from "./components/About";
-import Services from "./components/Services";
-import HowWeWork from "./components/HowWeWork";
-import ContactForm from "./components/ContactForm";
-import Footer from "./components/Footer";
+import Navbar from "./Components/Navbar";
+import Hero from "./Components/Hero";
+import About from "./Components/About";
+import Services from "./Components/Services";
+import HowWeWork from "./Components/HowWeWork";
+import ContactForm from "./Components/ContactForm";
+import Footer from "./Components/Footer";
 
 export default function App() {
   const [theme, setTheme] = useState("light");
