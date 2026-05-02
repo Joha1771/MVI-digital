@@ -1,0 +1,66 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --bg: #f5f4f0;
+  --bg-alt: #ffffff;
+  --text: #0a0a0a;
+  --text-sub: #6b6b6b;
+  --text-muted: #a0a0a0;
+  --border: rgba(0, 0, 0, 0.08);
+  --border-md: rgba(0, 0, 0, 0.14);
+  --card-bg: #ffffff;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.07), 0 4px 16px rgba(0, 0, 0, 0.04);
+  --nav-bg: rgba(10, 10, 10, 0.88);
+  --accent: #00d4a0;
+  --accent2: #00b4d8;
+  --btn-primary: #0a0a0a;
+  --btn-primary-text: #f5f4f0;
+}
+
+[data-theme="dark"] {
+  --bg: #0a0a0a;
+  --bg-alt: #111111;
+  --text: #f5f4f0;
+  --text-sub: #888888;
+  --text-muted: #555555;
+  --border: rgba(255, 255, 255, 0.07);
+  --border-md: rgba(255, 255, 255, 0.13);
+  --card-bg: #141414;
+  --card-shadow: 0 1px 4px rgba(0, 0, 0, 0.4), 0 4px 20px rgba(0, 0, 0, 0.25);
+  --nav-bg: rgba(10, 10, 10, 0.92);
+  --accent: #00d4a0;
+  --accent2: #00b4d8;
+  --btn-primary: #f5f4f0;
+  --btn-primary-text: #0a0a0a;
+}
+
+body {
+  font-family: "Plus Jakarta Sans", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  transition:
+    background 0.35s ease,
+    color 0.35s ease;
+}
+
+::-webkit-scrollbar {
+  width: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-md);
+  border-radius: 2px;
+}
+.divider {
+  height: 1px;
+  background: var(--border);
+}
