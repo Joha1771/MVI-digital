@@ -24,7 +24,7 @@ export default function App() {
       <Services />
       <HowWeWork />
       <ContactForm />
-      <Footer theme={theme} />
+      <Footer />
     </main>
   );
 }

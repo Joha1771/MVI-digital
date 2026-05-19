@@ -41,12 +41,19 @@ void main(){
 
 const SilkPlane = forwardRef(({ uniforms }, ref) => {
   const { viewport } = useThree();
+  const tick = useRef(0);
+
   useLayoutEffect(() => {
     if (ref.current) ref.current.scale.set(viewport.width, viewport.height, 1);
   }, [ref, viewport]);
-  useFrame((_, d) => {
-    ref.current.material.uniforms.uTime.value += 0.1 * d;
+
+  useFrame((_, delta) => {
+    // Пропускаем каждый второй кадр → ~30fps вместо 60
+    tick.current++;
+    if (tick.current % 2 !== 0) return;
+    ref.current.material.uniforms.uTime.value += delta * 0.8;
   });
+
   return (
     <mesh ref={ref}>
       <planeGeometry args={[1, 1, 1, 1]} />
@@ -63,7 +70,7 @@ SilkPlane.displayName = "SilkPlane";
 export default function Silk({
   speed = 3,
   scale = 1,
-  color = "#2a2a2a",
+  color = "#1B4332",
   noiseIntensity = 1.5,
   rotation = 0,
 }) {
@@ -82,9 +89,15 @@ export default function Silk({
 
   return (
     <Canvas
-      dpr={[1, 1]}
+      dpr={[0.6, 1]}
       frameloop="always"
       style={{ position: "absolute", inset: 0 }}
+      gl={{
+        antialias: false,
+        powerPreference: "low-power",
+        depth: false,
+        stencil: false,
+      }}
     >
       <SilkPlane ref={meshRef} uniforms={uniforms} />
     </Canvas>

@@ -1,67 +1,149 @@
 import { motion } from "framer-motion";
 import Silk from "./Silk";
 import { PhoneIcon, ArrowRightIcon } from "./Icons";
+import { useTranslation } from "../i18n/useTranslation";
+import { AnimatedText, AnimatedBlock } from "../i18n/AnimatedText";
 
 export default function Hero() {
+  const { t, lang } = useTranslation();
+
   return (
     <section
       id="hero"
-      className="relative pt-[250px] pb-[280px] flex items-center overflow-hidden"
-      style={{ background: "#0a0a0a" }}
+      className="relative pt-[140px] pb-[160px] flex items-center overflow-hidden"
+      style={{ background: "#0c1f17" }}
     >
       <div className="absolute inset-0 z-0">
         <Silk
           speed={3}
           scale={1}
-          color="#3a3a3a"
+          color="#1B4332"
           noiseIntensity={1.5}
           rotation={0}
         />
       </div>
-
       <div
         className="absolute inset-0 z-1"
         style={{
           background:
-            "linear-gradient(to bottom, rgba(10,10,10,0.2) 0%, rgba(10,10,10,0.55) 55%, rgba(10,10,10,0.97) 100%)",
+            "linear-gradient(to bottom, rgba(12,31,23,0.15) 0%, rgba(12,31,23,0.5) 50%, rgba(12,31,23,0.97) 100%)",
+        }}
+      />
+      <div
+        className="absolute z-1"
+        style={{
+          top: "20%",
+          right: "10%",
+          width: "400px",
+          height: "400px",
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle, rgba(26,158,92,0.18) 0%, transparent 70%)",
+          pointerEvents: "none",
+        }}
+      />
+      <div
+        className="absolute z-1"
+        style={{
+          top: "40%",
+          left: "5%",
+          width: "300px",
+          height: "300px",
+          borderRadius: "50%",
+          background:
+            "radial-gradient(circle, rgba(26,158,92,0.12) 0%, transparent 70%)",
+          pointerEvents: "none",
         }}
       />
 
       <div className="relative z-10 w-full px-8 md:px-16 max-w-7xl mx-auto">
         <div className="max-w-3xl">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.05 }}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "6px 14px",
+              borderRadius: "50px",
+              background: "rgba(26,158,92,0.12)",
+              border: "1px solid rgba(26,158,92,0.25)",
+              marginBottom: "1.5rem",
+            }}
+          >
+            <span
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: "#1A9E5C",
+                display: "inline-block",
+              }}
+            />
+            <AnimatedText
+              langKey={lang}
+              delay={0}
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 700,
+                color: "#1A9E5C",
+                letterSpacing: "0.08em",
+              }}
+            >
+              {t.hero.badge}
+            </AnimatedText>
+          </motion.div>
+
           <motion.h1
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.1 }}
             style={{
               fontSize: "clamp(40px,6vw,72px)",
-              color: "#f5f4f0",
               letterSpacing: "-0.02em",
               fontWeight: 800,
               lineHeight: 1.05,
               marginBottom: "1.5rem",
             }}
           >
-            Разработка сайтов
-            <br />и приложений
+            <AnimatedText
+              langKey={lang}
+              delay={0.05}
+              style={{ color: "#e8f5ee", display: "block" }}
+            >
+              {t.hero.title1}
+            </AnimatedText>
+            <AnimatedText
+              langKey={lang}
+              delay={0.1}
+              style={{ color: "#e8f5ee", display: "block" }}
+            >
+              {t.hero.title2}
+            </AnimatedText>
           </motion.h1>
 
-          <motion.p
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
-            style={{
-              color: "rgba(245,244,240,0.55)",
-              fontSize: "1.1rem",
-              lineHeight: 1.7,
-              maxWidth: "36rem",
-              marginBottom: "2.5rem",
-              fontWeight: 500,
-            }}
+            style={{ marginBottom: "2.5rem" }}
           >
-            MVI Digital создаёт цифровые решения под ключ — от лендингов до
-            финтех-платформ. Быстро и с фокусом на результат.
-          </motion.p>
+            <AnimatedBlock
+              langKey={lang}
+              delay={0.15}
+              style={{
+                color: "rgba(232,245,238,0.55)",
+                fontSize: "1.1rem",
+                lineHeight: 1.7,
+                maxWidth: "36rem",
+                fontWeight: 500,
+              }}
+            >
+              {t.hero.desc}
+            </AnimatedBlock>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -82,24 +164,30 @@ export default function Hero() {
                 borderRadius: "50px",
                 fontWeight: 700,
                 fontSize: "0.875rem",
-                background: "var(--btn-primary)",
-                color: "var(--btn-primary-text)",
-                transition: "background 0.35s, color 0.35s, transform 0.2s",
+                background: "#1A9E5C",
+                color: "#ffffff",
+                transition: "transform 0.2s, box-shadow 0.2s",
                 display: "flex",
                 alignItems: "center",
                 gap: "8px",
+                boxShadow: "0 4px 20px rgba(26,158,92,0.35)",
               }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.transform = "scale(1.04)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
-              }
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.04)";
+                e.currentTarget.style.boxShadow =
+                  "0 6px 28px rgba(26,158,92,0.5)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow =
+                  "0 4px 20px rgba(26,158,92,0.35)";
+              }}
             >
-              Заказать проект
+              <AnimatedText langKey={lang} delay={0.2}>
+                {t.hero.cta}
+              </AnimatedText>
               <ArrowRightIcon size={15} color="currentColor" />
             </a>
-
             <a
               href="#services"
               style={{
@@ -107,46 +195,45 @@ export default function Hero() {
                 borderRadius: "50px",
                 fontWeight: 500,
                 fontSize: "0.875rem",
-                border: "1px solid rgba(245,244,240,0.2)",
-                color: "rgba(245,244,240,0.65)",
+                border: "1px solid rgba(26,158,92,0.35)",
+                color: "rgba(232,245,238,0.7)",
                 transition: "border-color 0.2s, color 0.2s",
               }}
               onMouseEnter={(e) => {
-                e.target.style.borderColor = "rgba(245,244,240,0.4)";
-                e.target.style.color = "#f5f4f0";
+                e.currentTarget.style.borderColor = "#1A9E5C";
+                e.currentTarget.style.color = "#e8f5ee";
               }}
               onMouseLeave={(e) => {
-                e.target.style.borderColor = "rgba(245,244,240,0.2)";
-                e.target.style.color = "rgba(245,244,240,0.65)";
+                e.currentTarget.style.borderColor = "rgba(26,158,92,0.35)";
+                e.currentTarget.style.color = "rgba(232,245,238,0.7)";
               }}
             >
-              Наши услуги
+              <AnimatedText langKey={lang} delay={0.25}>
+                {t.hero.services}
+              </AnimatedText>
             </a>
-
             <a
               href="tel:+998959806600"
               style={{
                 fontSize: "0.875rem",
                 fontWeight: 500,
-                color: "rgba(245,244,240,0.3)",
+                color: "rgba(232,245,238,0.35)",
                 transition: "color 0.2s",
                 display: "flex",
                 alignItems: "center",
                 gap: "6px",
               }}
               onMouseEnter={(e) =>
-                (e.currentTarget.style.color = "rgba(245,244,240,0.6)")
+                (e.currentTarget.style.color = "rgba(232,245,238,0.7)")
               }
               onMouseLeave={(e) =>
-                (e.currentTarget.style.color = "rgba(245,244,240,0.3)")
+                (e.currentTarget.style.color = "rgba(232,245,238,0.35)")
               }
             >
-              <PhoneIcon size={14} color="currentColor" />
-              +998 95 980 66 00
+              <PhoneIcon size={14} color="currentColor" /> +998 95 980 66 00
             </a>
           </motion.div>
 
-          {/* Stats */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -154,43 +241,40 @@ export default function Hero() {
             style={{
               display: "flex",
               gap: "3rem",
-              borderTop: "1px solid rgba(245,244,240,0.1)",
+              borderTop: "1px solid rgba(26,158,92,0.2)",
               paddingTop: "2rem",
             }}
           >
-            {[
-              ["50+", "проектов"],
-              ["3+", "года опыта"],
-              ["100%", "довольных"],
-            ].map(([v, l]) => (
-              <div key={l}>
+            {t.hero.stats.map(({ value, label }, i) => (
+              <div key={i}>
                 <div
                   style={{
                     fontSize: "1.875rem",
                     fontWeight: 800,
-                    color: "#f5f4f0",
+                    color: "#1A9E5C",
                     marginBottom: "0.25rem",
                   }}
                 >
-                  {v}
+                  {value}
                 </div>
-                <div
+                <AnimatedText
+                  langKey={lang}
+                  delay={0.3 + i * 0.06}
                   style={{
                     fontSize: "0.75rem",
                     fontWeight: 500,
-                    color: "rgba(245,244,240,0.35)",
+                    color: "rgba(232,245,238,0.35)",
                     letterSpacing: "0.05em",
                   }}
                 >
-                  {l}
-                </div>
+                  {label}
+                </AnimatedText>
               </div>
             ))}
           </motion.div>
         </div>
       </div>
 
-      {/* Scroll */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -213,7 +297,7 @@ export default function Hero() {
             width: 1,
             height: 40,
             background:
-              "linear-gradient(to bottom, rgba(245,244,240,0.4), transparent)",
+              "linear-gradient(to bottom, rgba(26,158,92,0.6), transparent)",
           }}
         />
         <span
@@ -221,14 +305,12 @@ export default function Hero() {
             fontSize: "0.65rem",
             fontWeight: 700,
             letterSpacing: "0.15em",
-            color: "rgba(245,244,240,0.25)",
+            color: "rgba(26,158,92,0.4)",
           }}
         >
           SCROLL
         </span>
       </motion.div>
-
-      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}`}</style>
     </section>
   );
 }

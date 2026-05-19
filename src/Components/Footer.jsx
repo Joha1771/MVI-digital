@@ -1,41 +1,43 @@
 import { motion } from "framer-motion";
-import { PhoneIcon, GlobeIcon, MapPinIcon } from "./Icons";
+import { PhoneIcon, MailIcon, MapPinIcon } from "./Icons";
+import { useTranslation } from "../i18n/useTranslation";
+import { AnimatedText } from "../i18n/AnimatedText";
+import itparkLogo from "../assets/itpark-logo.jpg";
 
-const links = [
-  { label: "О компании", href: "#about" },
-  { label: "Услуги", href: "#services" },
-  { label: "Как работаем", href: "#how" },
-  { label: "Контакты", href: "#contact" },
+const navLinks = [
+  { href: "#about", key: "about" },
+  { href: "#services", key: "services" },
+  { href: "#how", key: "how" },
+  { href: "#contact", key: "contact" },
 ];
 
-const contacts = [
-  {
-    icon: <PhoneIcon size={14} color="currentColor" />,
-    label: "+998 95 980 66 00",
-    href: "tel:+998959806600",
-  },
-  {
-    icon: <GlobeIcon size={14} color="currentColor" />,
-    label: "mvi.com",
-    href: "https://mvi.com",
-  },
-  {
-    icon: <MapPinIcon size={14} color="currentColor" />,
-    label: "Ташкент, Узбекистан",
-    href: "#",
-  },
-];
+export default function Footer() {
+  const { t, lang } = useTranslation();
 
-export default function Footer({ theme }) {
-  const logo = theme === "dark" ? "/logo-light.svg" : "/logo-dark.svg";
+  const contacts = [
+    {
+      icon: <PhoneIcon size={14} color="currentColor" />,
+      label: "+998 95 980 66 00",
+      href: "tel:+998959806600",
+    },
+    {
+      icon: <MailIcon size={14} color="currentColor" />,
+      label: "mvidigit@gmail.com",
+      href: "mailto:mvidigit@gmail.com",
+    },
+    {
+      icon: <MapPinIcon size={14} color="currentColor" />,
+      label: "Tashkent, Uzbekistan",
+      href: "#",
+    },
+  ];
 
   return (
     <footer
       style={{
-        background: "var(--bg)",
-        borderTop: "1px solid var(--border)",
+        background: "#1B4332",
+        borderTop: "1px solid rgba(26,158,92,0.2)",
         padding: "4rem 2rem",
-        transition: "background 0.35s",
       }}
     >
       <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
@@ -47,6 +49,7 @@ export default function Footer({ theme }) {
             marginBottom: "3rem",
           }}
         >
+          {/* Brand */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -54,29 +57,94 @@ export default function Footer({ theme }) {
             transition={{ duration: 0.6 }}
           >
             <img
-              src={logo}
+              src="/logo-light.svg"
               alt="MVI Digital"
               style={{
-                height: "35px",
-                width: "120px",
-                objectFit: "contain",
+                height: "36px",
+                width: "auto",
                 marginBottom: "1rem",
-                transition: "opacity 0.35s",
+                display: "block",
               }}
             />
-            <p
+            <AnimatedText
+              langKey={lang}
+              delay={0}
               style={{
                 fontSize: "0.875rem",
                 lineHeight: 1.7,
                 fontWeight: 500,
-                color: "var(--text-sub)",
+                color: "rgba(232,245,238,0.7)",
+                display: "block",
+                marginBottom: "1.5rem",
               }}
             >
-              Разработка сайтов и приложений для бизнеса. Резидент IT Park
-              Uzbekistan.
-            </p>
+              {t.footer.desc}
+            </AnimatedText>
+
+            {/* IT Park Resident badge */}
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "12px",
+                padding: "10px 16px",
+                borderRadius: "12px",
+                background: "rgba(255,255,255,0.06)",
+                border: "1px solid rgba(232,245,238,0.12)",
+              }}
+            >
+              <img
+                src={itparkLogo}
+                alt="IT Park"
+                style={{
+                  width: "38px",
+                  height: "38px",
+                  borderRadius: "8px",
+                  objectFit: "contain",
+                  background: "white",
+                  padding: "4px",
+                }}
+              />
+              <div>
+                <div
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: 700,
+                    color: "#e8f5ee",
+                    lineHeight: 1.2,
+                  }}
+                >
+                  IT Park
+                </div>
+                <div
+                  style={{
+                    fontSize: "10px",
+                    color: "rgba(232,245,238,0.5)",
+                    marginBottom: "3px",
+                  }}
+                >
+                  Uzbekistan
+                </div>
+                <div
+                  style={{
+                    fontSize: "9px",
+                    fontWeight: 700,
+                    letterSpacing: "0.08em",
+                    color: "#1A9E5C",
+                    background: "rgba(26,158,92,0.15)",
+                    border: "1px solid rgba(26,158,92,0.3)",
+                    padding: "1px 6px",
+                    borderRadius: "4px",
+                    display: "inline-block",
+                  }}
+                >
+                  РЕЗИДЕНТ
+                </div>
+              </div>
+            </div>
           </motion.div>
 
+          {/* Nav */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -88,11 +156,13 @@ export default function Footer({ theme }) {
                 fontSize: "0.7rem",
                 fontWeight: 700,
                 letterSpacing: "0.15em",
-                color: "var(--text-muted)",
+                color: "rgba(232,245,238,0.45)",
                 marginBottom: "1.25rem",
               }}
             >
-              НАВИГАЦИЯ
+              <AnimatedText langKey={lang} delay={0}>
+                {t.footer.nav}
+              </AnimatedText>
             </h4>
             <div
               style={{
@@ -101,29 +171,32 @@ export default function Footer({ theme }) {
                 gap: "0.75rem",
               }}
             >
-              {links.map((l) => (
+              {navLinks.map((l, i) => (
                 <a
-                  key={l.label}
+                  key={l.key}
                   href={l.href}
                   style={{
                     fontSize: "0.875rem",
                     fontWeight: 500,
-                    color: "var(--text-sub)",
+                    color: "rgba(232,245,238,0.7)",
                     transition: "color 0.2s",
                   }}
                   onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "var(--text)")
+                    (e.currentTarget.style.color = "#ffffff")
                   }
                   onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "var(--text-sub)")
+                    (e.currentTarget.style.color = "rgba(232,245,238,0.7)")
                   }
                 >
-                  {l.label}
+                  <AnimatedText langKey={lang} delay={i * 0.07}>
+                    {t.nav[l.key]}
+                  </AnimatedText>
                 </a>
               ))}
             </div>
           </motion.div>
 
+          {/* Contacts */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -135,11 +208,13 @@ export default function Footer({ theme }) {
                 fontSize: "0.7rem",
                 fontWeight: 700,
                 letterSpacing: "0.15em",
-                color: "var(--text-muted)",
+                color: "rgba(232,245,238,0.45)",
                 marginBottom: "1.25rem",
               }}
             >
-              КОНТАКТЫ
+              <AnimatedText langKey={lang} delay={0}>
+                {t.footer.contacts}
+              </AnimatedText>
             </h4>
             <div
               style={{
@@ -152,26 +227,23 @@ export default function Footer({ theme }) {
                 <a
                   key={c.label}
                   href={c.href}
-                  target={c.href.startsWith("http") ? "_blank" : undefined}
-                  rel="noopener noreferrer"
                   style={{
                     fontSize: "0.875rem",
                     fontWeight: 500,
-                    color: "var(--text-sub)",
+                    color: "rgba(232,245,238,0.7)",
                     transition: "color 0.2s",
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
                   }}
                   onMouseEnter={(e) =>
-                    (e.currentTarget.style.color = "var(--text)")
+                    (e.currentTarget.style.color = "#ffffff")
                   }
                   onMouseLeave={(e) =>
-                    (e.currentTarget.style.color = "var(--text-sub)")
+                    (e.currentTarget.style.color = "rgba(232,245,238,0.7)")
                   }
                 >
-                  {c.icon}
-                  {c.label}
+                  {c.icon} {c.label}
                 </a>
               ))}
             </div>
@@ -180,7 +252,7 @@ export default function Footer({ theme }) {
 
         <div
           style={{
-            borderTop: "1px solid var(--border)",
+            borderTop: "1px solid rgba(232,245,238,0.1)",
             paddingTop: "2rem",
             display: "flex",
             justifyContent: "space-between",
@@ -193,20 +265,25 @@ export default function Footer({ theme }) {
             style={{
               fontSize: "0.75rem",
               fontWeight: 500,
-              color: "var(--text-muted)",
+              color: "rgba(232,245,238,0.45)",
             }}
           >
-            © {new Date().getFullYear()} MVI Digital. Все права защищены.
+            © {new Date().getFullYear()} MVI Digital.{" "}
+            <AnimatedText langKey={lang} delay={0}>
+              {t.footer.rights}
+            </AnimatedText>
           </p>
-          <p
+          <AnimatedText
+            langKey={lang}
+            delay={0.1}
             style={{
               fontSize: "0.75rem",
               fontWeight: 500,
-              color: "var(--text-muted)",
+              color: "rgba(232,245,238,0.45)",
             }}
           >
-            Resident IT Park Uzbekistan
-          </p>
+            {t.footer.resident}
+          </AnimatedText>
         </div>
       </div>
     </footer>

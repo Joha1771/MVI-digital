@@ -1,0 +1,138 @@
+export default {
+  nav: {
+    about: "About",
+    services: "Services",
+    how: "How we work",
+    contact: "Contact",
+    cta: "Start a project",
+  },
+  hero: {
+    badge: "IT Park Uzbekistan · Resident",
+    title1: "Website & app",
+    title2: "development",
+    desc: "MVI Digital builds digital solutions end-to-end — from landing pages to fintech platforms. Fast and focused on results.",
+    cta: "Start a project",
+    services: "Our services",
+    stats: [
+      { value: "50+", label: "projects" },
+      { value: "3+", label: "years experience" },
+      { value: "100%", label: "satisfied clients" },
+    ],
+  },
+  about: {
+    tag: "ABOUT",
+    title1: "Young team.",
+    title2: "Powerful solutions.",
+    p1: "MVI Digital is a resident of IT Park Uzbekistan. We develop websites and applications, creating digital solutions tailored to business needs.",
+    p2: "We work fast, transparently and effectively. Every project gets an individual approach focused on the client's real business goals.",
+
+    cta: "Discuss a project",
+    stats: [
+      { value: "50+", label: "Projects completed" },
+      { value: "3+", label: "Years on the market" },
+      { value: "100%", label: "Satisfied clients" },
+    ],
+  },
+  services: {
+    tag: "SERVICES",
+    title: "What we do",
+    items: [
+      {
+        number: "01",
+        title: "Websites & landing pages",
+        desc: "We build modern high-conversion websites with responsive design across all devices and platforms.",
+        tags: ["Landing Page", "Corporate Site", "E-commerce", "SEO"],
+      },
+      {
+        number: "02",
+        title: "Web applications",
+        desc: "We create complex web applications with intuitive interfaces. React, Next.js, TypeScript — for any task.",
+        tags: ["React", "Next.js", "TypeScript", "REST API"],
+      },
+      {
+        number: "03",
+        title: "Mobile applications",
+        desc: "Mobile apps for iOS and Android with native performance and modern design.",
+        tags: ["iOS", "Android", "React Native", "UI/UX"],
+      },
+      {
+        number: "04",
+        title: "Fintech solutions",
+        desc: "Payment integrations, financial dashboards and secure transaction systems delivered end-to-end.",
+        tags: ["Payments", "Dashboard", "Security", "API"],
+      },
+      {
+        number: "05",
+        title: "Support & improvements",
+        desc: "Technical support, feature updates and performance optimisation for existing projects.",
+        tags: ["Support", "Optimization", "Maintenance", "Updates"],
+      },
+    ],
+  },
+  how: {
+    tag: "HOW WE WORK",
+    title1: "Simple process —",
+    title2: "clear results",
+    steps: [
+      {
+        n: "01",
+        title: "We discuss your task",
+        desc: "We listen to your goals, analyse the task and propose the optimal solution.",
+      },
+      {
+        n: "02",
+        title: "We design the solution",
+        desc: "We plan the architecture, develop the design and align it with you.",
+      },
+      {
+        n: "03",
+        title: "We develop",
+        desc: "We write clean code, test across all devices and keep you informed.",
+      },
+      {
+        n: "04",
+        title: "We launch",
+        desc: "We deploy the project, configure the domain and run final testing.",
+      },
+      {
+        n: "05",
+        title: "We support",
+        desc: "We provide ongoing technical support and updates after launch.",
+      },
+    ],
+  },
+  contact: {
+    tag: "CONTACT",
+    title: "Leave a request",
+    desc: "We'll get back to you within 24 hours",
+    name: "NAME",
+    namePlaceholder: "Your name",
+    phone: "PHONE",
+    phonePlaceholder: "+998 xx xxx xx xx",
+    service: "WHAT DO YOU NEED",
+    servicePlaceholder: "Select a service",
+    serviceOptions: [
+      { value: "site", label: "Website" },
+      { value: "app", label: "Application" },
+      { value: "fintech", label: "Fintech solution" },
+      { value: "other", label: "Other" },
+    ],
+    submit: "Send request",
+    successTitle: "Request sent!",
+    successDesc: "We'll contact you within 24 hours",
+    errors: {
+      nameMin: "Minimum 2 characters",
+      nameRequired: "Enter your name",
+      phoneInvalid: "Invalid phone number",
+      phoneRequired: "Enter your phone number",
+      serviceRequired: "Select a service",
+    },
+  },
+  footer: {
+    desc: "Website and app development for businesses. Resident of IT Park Uzbekistan.",
+    nav: "NAVIGATION",
+    contacts: "CONTACTS",
+    rights: "All rights reserved.",
+    resident: "Resident IT Park Uzbekistan",
+  },
+};

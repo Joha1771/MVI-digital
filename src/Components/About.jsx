@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
+import { useTranslation } from "../i18n/useTranslation";
+import { AnimatedText, AnimatedBlock } from "../i18n/AnimatedText";
+
+const colors = ["var(--accent)", "var(--accent2)", "var(--accent3)"];
 
 export default function About() {
-  const stats = [
-    { value: "50+", label: "Проектов выполнено" },
-    { value: "3+", label: "Года на рынке" },
-    { value: "100%", label: "Клиентов довольны" },
-  ];
+  const { t, lang } = useTranslation();
+
   return (
     <section
       id="about"
@@ -32,18 +33,20 @@ export default function About() {
             viewport={{ once: true }}
             transition={{ duration: 0.7 }}
           >
-            <span
+            <AnimatedText
+              langKey={lang}
+              delay={0}
               style={{
                 fontSize: "0.7rem",
                 fontWeight: 700,
                 letterSpacing: "0.18em",
-                color: "var(--text-muted)",
+                color: "var(--accent2)",
                 display: "block",
                 marginBottom: "1rem",
               }}
             >
-              О КОМПАНИИ
-            </span>
+              {t.about.tag}
+            </AnimatedText>
             <h2
               style={{
                 fontSize: "clamp(2rem,4vw,3rem)",
@@ -53,13 +56,24 @@ export default function About() {
                 marginBottom: "1.5rem",
               }}
             >
-              Молодая команда.
-              <br />
-              <span style={{ color: "var(--text-muted)" }}>
-                Сильные решения.
-              </span>
+              <AnimatedText
+                langKey={lang}
+                delay={0.05}
+                style={{ display: "block" }}
+              >
+                {t.about.title1}
+              </AnimatedText>
+              <AnimatedText
+                langKey={lang}
+                delay={0.1}
+                style={{ color: "var(--text-muted)", display: "block" }}
+              >
+                {t.about.title2}
+              </AnimatedText>
             </h2>
-            <p
+            <AnimatedBlock
+              langKey={lang}
+              delay={0.15}
               style={{
                 color: "var(--text-sub)",
                 fontSize: "1rem",
@@ -68,11 +82,11 @@ export default function About() {
                 fontWeight: 500,
               }}
             >
-              MVI Digital — резидент IT Park Uzbekistan. Мы занимаемся
-              разработкой сайтов и приложений, создавая цифровые решения под
-              задачи бизнеса.
-            </p>
-            <p
+              {t.about.p1}
+            </AnimatedBlock>
+            <AnimatedBlock
+              langKey={lang}
+              delay={0.2}
               style={{
                 color: "var(--text-sub)",
                 fontSize: "1rem",
@@ -81,9 +95,8 @@ export default function About() {
                 fontWeight: 500,
               }}
             >
-              Работаем быстро, прозрачно и результативно. Каждый проект —
-              индивидуальный подход и фокус на реальных бизнес-целях клиента.
-            </p>
+              {t.about.p2}
+            </AnimatedBlock>
             <a
               href="#contact"
               style={{
@@ -92,13 +105,16 @@ export default function About() {
                 gap: "0.5rem",
                 fontSize: "0.875rem",
                 fontWeight: 700,
-                color: "var(--text)",
+                color: "var(--accent2)",
                 transition: "gap 0.2s",
               }}
               onMouseEnter={(e) => (e.currentTarget.style.gap = "0.75rem")}
               onMouseLeave={(e) => (e.currentTarget.style.gap = "0.5rem")}
             >
-              Обсудить проект <span>→</span>
+              <AnimatedText langKey={lang} delay={0.3}>
+                {t.about.cta}
+              </AnimatedText>{" "}
+              <span>→</span>
             </a>
           </motion.div>
 
@@ -109,7 +125,7 @@ export default function About() {
             transition={{ duration: 0.7 }}
             style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
           >
-            {stats.map((s, i) => (
+            {t.about.stats.map((s, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
@@ -124,21 +140,23 @@ export default function About() {
                   borderRadius: "1rem",
                   background: "var(--card-bg)",
                   border: "1px solid var(--border)",
+                  borderLeft: `3px solid ${colors[i]}`,
                   boxShadow: "var(--card-shadow)",
-                  transition:
-                    "background 0.35s, border 0.35s, box-shadow 0.35s",
+                  transition: "background 0.35s, border 0.35s",
                 }}
               >
                 <span
                   style={{
                     fontSize: "2.25rem",
                     fontWeight: 800,
-                    color: "var(--text)",
+                    color: colors[i],
                   }}
                 >
                   {s.value}
                 </span>
-                <span
+                <AnimatedText
+                  langKey={lang}
+                  delay={i * 0.08}
                   style={{
                     fontSize: "0.875rem",
                     fontWeight: 500,
@@ -146,7 +164,7 @@ export default function About() {
                   }}
                 >
                   {s.label}
-                </span>
+                </AnimatedText>
               </motion.div>
             ))}
           </motion.div>

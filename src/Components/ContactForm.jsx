@@ -2,23 +2,28 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { PhoneIcon, GlobeIcon, CheckIcon, ArrowRightIcon } from "./Icons";
-
-const schema = Yup.object({
-  name: Yup.string().min(2, "Минимум 2 символа").required("Введите имя"),
-  phone: Yup.string()
-    .matches(/^\+?[0-9\s\-()]{9,15}$/, "Некорректный номер")
-    .required("Введите телефон"),
-  service: Yup.string().required("Выберите услугу"),
-});
+import { PhoneIcon, MailIcon, CheckIcon, ArrowRightIcon } from "./Icons";
+import { useTranslation } from "../i18n/useTranslation";
+import { AnimatedText, AnimatedBlock } from "../i18n/AnimatedText";
 
 export default function ContactForm() {
   const [done, setDone] = useState(false);
+  const { t, lang } = useTranslation();
+  const e = t.contact.errors;
+
+  const schema = Yup.object({
+    name: Yup.string().min(2, e.nameMin).required(e.nameRequired),
+    phone: Yup.string()
+      .matches(/^\+?[0-9\s\-()]{9,15}$/, e.phoneInvalid)
+      .required(e.phoneRequired),
+    service: Yup.string().required(e.serviceRequired),
+  });
 
   const f = useFormik({
     initialValues: { name: "", phone: "", service: "" },
     validationSchema: schema,
     onSubmit: () => setDone(true),
+    enableReinitialize: true,
   });
 
   const inputStyle = (field) => ({
@@ -55,18 +60,20 @@ export default function ContactForm() {
           transition={{ duration: 0.6 }}
           style={{ marginBottom: "3rem" }}
         >
-          <span
+          <AnimatedText
+            langKey={lang}
+            delay={0}
             style={{
               fontSize: "0.7rem",
               fontWeight: 700,
               letterSpacing: "0.18em",
-              color: "var(--text-muted)",
+              color: "var(--accent)",
               display: "block",
               marginBottom: "1rem",
             }}
           >
-            КОНТАКТЫ
-          </span>
+            {t.contact.tag}
+          </AnimatedText>
           <h2
             style={{
               fontSize: "clamp(2rem,4vw,3rem)",
@@ -75,17 +82,21 @@ export default function ContactForm() {
               marginBottom: "0.75rem",
             }}
           >
-            Оставить заявку
+            <AnimatedText langKey={lang} delay={0.07}>
+              {t.contact.title}
+            </AnimatedText>
           </h2>
-          <p
+          <AnimatedBlock
+            langKey={lang}
+            delay={0.13}
             style={{
               fontSize: "0.9rem",
               fontWeight: 500,
               color: "var(--text-sub)",
             }}
           >
-            Свяжемся в течение 24 часов
-          </p>
+            {t.contact.desc}
+          </AnimatedBlock>
         </motion.div>
 
         <motion.div
@@ -111,7 +122,6 @@ export default function ContactForm() {
                 gap: "1.25rem",
               }}
             >
-              {/* Имя */}
               <div>
                 <label
                   style={{
@@ -123,18 +133,18 @@ export default function ContactForm() {
                     marginBottom: "0.5rem",
                   }}
                 >
-                  ИМЯ
+                  <AnimatedText langKey={lang} delay={0.1}>
+                    {t.contact.name}
+                  </AnimatedText>
                 </label>
                 <input
                   type="text"
                   name="name"
                   value={f.values.name}
                   onChange={f.handleChange}
-                  placeholder="Ваше имя"
+                  placeholder={t.contact.namePlaceholder}
                   style={inputStyle("name")}
-                  onFocus={(e) =>
-                    (e.target.style.border = "1px solid var(--border-md)")
-                  }
+                  onFocus={(e) => (e.target.style.border = "1px solid #1A9E5C")}
                   onBlur={(e) => {
                     f.handleBlur(e);
                     e.target.style.border = f.errors.name
@@ -156,7 +166,6 @@ export default function ContactForm() {
                 )}
               </div>
 
-              {/* Телефон */}
               <div>
                 <label
                   style={{
@@ -168,18 +177,18 @@ export default function ContactForm() {
                     marginBottom: "0.5rem",
                   }}
                 >
-                  ТЕЛЕФОН
+                  <AnimatedText langKey={lang} delay={0.15}>
+                    {t.contact.phone}
+                  </AnimatedText>
                 </label>
                 <input
                   type="tel"
                   name="phone"
                   value={f.values.phone}
                   onChange={f.handleChange}
-                  placeholder="+998 xx xxx xx xx"
+                  placeholder={t.contact.phonePlaceholder}
                   style={inputStyle("phone")}
-                  onFocus={(e) =>
-                    (e.target.style.border = "1px solid var(--border-md)")
-                  }
+                  onFocus={(e) => (e.target.style.border = "1px solid #1A9E5C")}
                   onBlur={(e) => {
                     f.handleBlur(e);
                     e.target.style.border = f.errors.phone
@@ -201,7 +210,6 @@ export default function ContactForm() {
                 )}
               </div>
 
-              {/* Услуга */}
               <div>
                 <label
                   style={{
@@ -213,7 +221,9 @@ export default function ContactForm() {
                     marginBottom: "0.5rem",
                   }}
                 >
-                  ЧТО НУЖНО
+                  <AnimatedText langKey={lang} delay={0.2}>
+                    {t.contact.service}
+                  </AnimatedText>
                 </label>
                 <select
                   name="service"
@@ -229,12 +239,13 @@ export default function ContactForm() {
                   }}
                 >
                   <option value="" disabled>
-                    Выберите услугу
+                    {t.contact.servicePlaceholder}
                   </option>
-                  <option value="site">Сайт</option>
-                  <option value="app">Приложение</option>
-                  <option value="fintech">Финтех-решение</option>
-                  <option value="other">Другое</option>
+                  {t.contact.serviceOptions.map((o) => (
+                    <option key={o.value} value={o.value}>
+                      {o.label}
+                    </option>
+                  ))}
                 </select>
                 {f.touched.service && f.errors.service && (
                   <p
@@ -250,7 +261,6 @@ export default function ContactForm() {
                 )}
               </div>
 
-              {/* Кнопка — как остальные, не зелёная */}
               <button
                 type="submit"
                 style={{
@@ -261,22 +271,30 @@ export default function ContactForm() {
                   cursor: "pointer",
                   border: "none",
                   marginTop: "0.5rem",
-                  background: "var(--btn-primary)",
-                  color: "var(--btn-primary-text)",
-                  transition: "background 0.35s, color 0.35s, transform 0.2s",
+                  background: "#1A9E5C",
+                  color: "#ffffff",
+                  transition: "transform 0.2s, box-shadow 0.2s",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   gap: "8px",
+                  boxShadow: "0 4px 16px rgba(26,158,92,0.3)",
+                  fontFamily: "inherit",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "scale(1.02)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = "scale(1.02)";
+                  e.currentTarget.style.boxShadow =
+                    "0 6px 24px rgba(26,158,92,0.5)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = "scale(1)";
+                  e.currentTarget.style.boxShadow =
+                    "0 4px 16px rgba(26,158,92,0.3)";
+                }}
               >
-                Отправить заявку
+                <AnimatedText langKey={lang} delay={0.25}>
+                  {t.contact.submit}
+                </AnimatedText>
                 <ArrowRightIcon size={15} color="currentColor" />
               </button>
             </form>
@@ -291,14 +309,15 @@ export default function ContactForm() {
                   width: 64,
                   height: 64,
                   borderRadius: "50%",
-                  background: "var(--border)",
+                  background: "rgba(26,158,92,0.1)",
+                  border: "1px solid rgba(26,158,92,0.3)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   margin: "0 auto 1rem",
                 }}
               >
-                <CheckIcon size={28} color="var(--text)" />
+                <CheckIcon size={28} color="#1A9E5C" />
               </div>
               <h3
                 style={{
@@ -308,22 +327,25 @@ export default function ContactForm() {
                   marginBottom: "0.5rem",
                 }}
               >
-                Заявка отправлена!
+                <AnimatedText langKey={lang} delay={0}>
+                  {t.contact.successTitle}
+                </AnimatedText>
               </h3>
-              <p
+              <AnimatedBlock
+                langKey={lang}
+                delay={0.1}
                 style={{
                   fontSize: "0.875rem",
                   color: "var(--text-sub)",
                   fontWeight: 500,
                 }}
               >
-                Свяжемся с вами в течение 24 часов
-              </p>
+                {t.contact.successDesc}
+              </AnimatedBlock>
             </motion.div>
           )}
         </motion.div>
 
-        {/* Контакты */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -348,18 +370,17 @@ export default function ContactForm() {
               alignItems: "center",
               gap: "6px",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text)")}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.color = "var(--accent)")
+            }
             onMouseLeave={(e) =>
               (e.currentTarget.style.color = "var(--text-sub)")
             }
           >
-            <PhoneIcon size={14} color="currentColor" />
-            +998 95 980 66 00
+            <PhoneIcon size={14} color="currentColor" /> +998 95 980 66 00
           </a>
           <a
-            href="https://mvi.com"
-            target="_blank"
-            rel="noopener noreferrer"
+            href="mailto:mvidigit@gmail.com"
             style={{
               fontSize: "0.875rem",
               fontWeight: 500,
@@ -369,13 +390,14 @@ export default function ContactForm() {
               alignItems: "center",
               gap: "6px",
             }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = "var(--text)")}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.color = "var(--accent)")
+            }
             onMouseLeave={(e) =>
               (e.currentTarget.style.color = "var(--text-sub)")
             }
           >
-            <GlobeIcon size={14} color="currentColor" />
-            mvi.com
+            <MailIcon size={14} color="currentColor" /> mvidigit@gmail.com
           </a>
         </motion.div>
       </div>

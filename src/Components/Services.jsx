@@ -1,50 +1,19 @@
 import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useTranslation } from "../i18n/useTranslation";
+import { AnimatedText, AnimatedBlock } from "../i18n/AnimatedText";
 
-const services = [
-  {
-    number: "01",
-    title: "Сайты и лендинги",
-    desc: "Разрабатываем современные сайты с высокой конверсией. Адаптивный дизайн под все устройства и платформы.",
-    tags: ["Landing Page", "Corporate Site", "E-commerce", "SEO"],
-  },
-  {
-    number: "02",
-    title: "Веб-приложения",
-    desc: "Создаём сложные веб-приложения с удобным интерфейсом. React, Next.js, TypeScript — под любые задачи.",
-    tags: ["React", "Next.js", "TypeScript", "REST API"],
-  },
-  {
-    number: "03",
-    title: "Мобильные приложения",
-    desc: "Мобильные приложения для iOS и Android. Нативная производительность и современный дизайн.",
-    tags: ["iOS", "Android", "React Native", "UI/UX"],
-  },
-  {
-    number: "04",
-    title: "Финтех-решения",
-    desc: "Платёжные интеграции, финансовые дашборды и безопасные транзакционные системы под ключ.",
-    tags: ["Payments", "Dashboard", "Security", "API"],
-  },
-  {
-    number: "05",
-    title: "Поддержка и доработка",
-    desc: "Техническая поддержка, обновления функционала и оптимизация производительности существующих проектов.",
-    tags: ["Support", "Optimization", "Maintenance", "Updates"],
-  },
-];
+const accents = ["#1D74BB", "#1A9E5C", "#5BC4F5", "#1D74BB", "#1B4332"];
 
-function ServiceCard({ service, index, total }) {
+function ServiceCard({ service, index, total, accent, lang }) {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start end", "end start"],
   });
-
   const y = useTransform(scrollYProgress, [0, 0.5], [80, 0]);
   const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
-
-  const isEven = index % 2 === 0;
+  const isDark = index % 2 === 0;
 
   return (
     <div
@@ -59,26 +28,25 @@ function ServiceCard({ service, index, total }) {
       <motion.div style={{ y, opacity }} className="max-w-3xl mx-auto">
         <div
           style={{
-            background: isEven ? "#0a0a0a" : "#f5f4f0",
+            background: isDark ? "#1B4332" : "#f0f7f4",
             borderRadius: "1.25rem",
             padding: "2.5rem",
-            border: isEven
-              ? "1px solid rgba(245,244,240,0.08)"
-              : "1px solid rgba(10,10,10,0.08)",
+            border: isDark
+              ? "1px solid rgba(26,158,92,0.2)"
+              : "1px solid rgba(27,67,50,0.1)",
             transition: "transform 0.3s ease, box-shadow 0.3s ease",
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-4px)";
-            e.currentTarget.style.boxShadow = isEven
-              ? "0 20px 60px rgba(0,0,0,0.5)"
-              : "0 20px 60px rgba(0,0,0,0.15)";
+            e.currentTarget.style.boxShadow = isDark
+              ? "0 20px 60px rgba(0,0,0,0.4)"
+              : "0 20px 60px rgba(27,67,50,0.12)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0)";
             e.currentTarget.style.boxShadow = "none";
           }}
         >
-          {/* Header */}
           <div
             style={{
               display: "flex",
@@ -92,7 +60,7 @@ function ServiceCard({ service, index, total }) {
                 fontSize: "0.7rem",
                 fontWeight: 800,
                 letterSpacing: "0.1em",
-                color: isEven ? "rgba(245,244,240,0.3)" : "rgba(10,10,10,0.3)",
+                color: accent,
                 fontFamily: "monospace",
               }}
             >
@@ -102,60 +70,67 @@ function ServiceCard({ service, index, total }) {
               style={{
                 flex: 1,
                 height: "1px",
-                background: isEven
-                  ? "rgba(245,244,240,0.1)"
-                  : "rgba(10,10,10,0.1)",
+                background: isDark
+                  ? "rgba(232,245,238,0.1)"
+                  : "rgba(27,67,50,0.1)",
+              }}
+            />
+            <div
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: "50%",
+                background: accent,
               }}
             />
           </div>
-
-          {/* Title */}
           <h3
             style={{
               fontSize: "clamp(1.5rem, 3vw, 2.25rem)",
               fontWeight: 800,
               letterSpacing: "-0.02em",
               lineHeight: 1.1,
-              color: isEven ? "#f5f4f0" : "#0a0a0a",
+              color: isDark ? "#e8f5ee" : "#0d1f18",
               marginBottom: "1rem",
             }}
           >
-            {service.title}
+            <AnimatedText langKey={lang} delay={0.05}>
+              {service.title}
+            </AnimatedText>
           </h3>
-
-          {/* Description */}
-          <p
+          <AnimatedBlock
+            langKey={lang}
+            delay={0.1}
             style={{
               fontSize: "0.95rem",
               lineHeight: 1.7,
               fontWeight: 500,
-              color: isEven ? "rgba(245,244,240,0.5)" : "rgba(10,10,10,0.5)",
+              color: isDark ? "rgba(232,245,238,0.55)" : "rgba(13,31,24,0.55)",
               marginBottom: "1.5rem",
               maxWidth: "28rem",
             }}
           >
             {service.desc}
-          </p>
-
-          {/* Tags */}
+          </AnimatedBlock>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            {service.tags.map((tag) => (
-              <span
+            {service.tags.map((tag, ti) => (
+              <AnimatedText
                 key={tag}
+                langKey={lang}
+                delay={0.15 + ti * 0.04}
                 style={{
                   fontSize: "0.75rem",
                   fontWeight: 600,
                   padding: "0.375rem 0.875rem",
                   borderRadius: "50px",
-                  border: `1px solid ${isEven ? "rgba(245,244,240,0.15)" : "rgba(10,10,10,0.15)"}`,
-                  color: isEven
-                    ? "rgba(245,244,240,0.6)"
-                    : "rgba(10,10,10,0.6)",
+                  border: `1px solid ${accent}40`,
+                  color: accent,
                   letterSpacing: "0.02em",
+                  background: `${accent}10`,
                 }}
               >
                 {tag}
-              </span>
+              </AnimatedText>
             ))}
           </div>
         </div>
@@ -165,6 +140,8 @@ function ServiceCard({ service, index, total }) {
 }
 
 export default function Services() {
+  const { t, lang } = useTranslation();
+
   return (
     <section
       id="services"
@@ -175,7 +152,6 @@ export default function Services() {
       }}
     >
       <div style={{ maxWidth: "72rem", margin: "0 auto" }}>
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -183,18 +159,20 @@ export default function Services() {
           transition={{ duration: 0.6 }}
           style={{ maxWidth: "48rem", marginBottom: "5rem" }}
         >
-          <span
+          <AnimatedText
+            langKey={lang}
+            delay={0}
             style={{
               fontSize: "0.7rem",
               fontWeight: 700,
               letterSpacing: "0.18em",
-              color: "var(--text-muted)",
+              color: "var(--accent2)",
               display: "block",
               marginBottom: "1rem",
             }}
           >
-            УСЛУГИ
-          </span>
+            {t.services.tag}
+          </AnimatedText>
           <h2
             style={{
               fontSize: "clamp(2rem,4vw,3rem)",
@@ -203,18 +181,20 @@ export default function Services() {
               lineHeight: 1.1,
             }}
           >
-            Что мы делаем
+            <AnimatedText langKey={lang} delay={0.08}>
+              {t.services.title}
+            </AnimatedText>
           </h2>
         </motion.div>
-
-        {/* Cards */}
         <div style={{ position: "relative" }}>
-          {services.map((service, i) => (
+          {t.services.items.map((service, i) => (
             <ServiceCard
               key={i}
               service={service}
               index={i}
-              total={services.length}
+              total={t.services.items.length}
+              accent={accents[i]}
+              lang={lang}
             />
           ))}
         </div>
