@@ -82,7 +82,10 @@ export default function Footer() {
             </AnimatedText>
 
             {/* IT Park Resident badge */}
-            <div
+            <a
+              href="https://www.it-park.uz/"
+              target="_blank"
+              rel="noopener noreferrer"
               style={{
                 display: "inline-flex",
                 alignItems: "center",
@@ -91,6 +94,7 @@ export default function Footer() {
                 borderRadius: "12px",
                 background: "rgba(255,255,255,0.06)",
                 border: "1px solid rgba(232,245,238,0.12)",
+                textDecoration: "none",
               }}
             >
               <img
@@ -141,7 +145,7 @@ export default function Footer() {
                   РЕЗИДЕНТ
                 </div>
               </div>
-            </div>
+            </a>
           </motion.div>
 
           {/* Nav */}

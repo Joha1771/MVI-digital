@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://mvidigit.com/sitemap.xml

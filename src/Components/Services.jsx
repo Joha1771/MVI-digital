@@ -2,10 +2,14 @@ import { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useTranslation } from "../i18n/useTranslation";
 import { AnimatedText, AnimatedBlock } from "../i18n/AnimatedText";
+import { ArrowRightIcon } from "./Icons";
 
 const accents = ["#1D74BB", "#1A9E5C", "#5BC4F5", "#1D74BB", "#1B4332"];
 
-function ServiceCard({ service, index, total, accent, lang }) {
+// Маппинг услуги → value для select в форме
+const serviceValues = ["site", "app", "app", "fintech", "other"];
+
+function ServiceCard({ service, index, total, accent, lang, serviceValue }) {
   const ref = useRef(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -14,6 +18,27 @@ function ServiceCard({ service, index, total, accent, lang }) {
   const y = useTransform(scrollYProgress, [0, 0.5], [80, 0]);
   const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
   const isDark = index % 2 === 0;
+
+  const handleOrder = () => {
+    // Скроллим к форме
+    const contactSection = document.getElementById("contact");
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: "smooth" });
+    }
+    // Предзаполняем select через кастомное событие
+    setTimeout(() => {
+      const event = new CustomEvent("prefill-service", {
+        detail: serviceValue,
+      });
+      window.dispatchEvent(event);
+    }, 600);
+  };
+
+  const btnLabel = {
+    ru: "Заказать",
+    uz: "Buyurtma",
+    en: "Order",
+  };
 
   return (
     <div
@@ -47,6 +72,7 @@ function ServiceCard({ service, index, total, accent, lang }) {
             e.currentTarget.style.boxShadow = "none";
           }}
         >
+          {/* Header */}
           <div
             style={{
               display: "flex",
@@ -84,6 +110,8 @@ function ServiceCard({ service, index, total, accent, lang }) {
               }}
             />
           </div>
+
+          {/* Title */}
           <h3
             style={{
               fontSize: "clamp(1.5rem, 3vw, 2.25rem)",
@@ -98,6 +126,8 @@ function ServiceCard({ service, index, total, accent, lang }) {
               {service.title}
             </AnimatedText>
           </h3>
+
+          {/* Desc */}
           <AnimatedBlock
             langKey={lang}
             delay={0.1}
@@ -112,26 +142,71 @@ function ServiceCard({ service, index, total, accent, lang }) {
           >
             {service.desc}
           </AnimatedBlock>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
-            {service.tags.map((tag, ti) => (
-              <AnimatedText
-                key={tag}
-                langKey={lang}
-                delay={0.15 + ti * 0.04}
-                style={{
-                  fontSize: "0.75rem",
-                  fontWeight: 600,
-                  padding: "0.375rem 0.875rem",
-                  borderRadius: "50px",
-                  border: `1px solid ${accent}40`,
-                  color: accent,
-                  letterSpacing: "0.02em",
-                  background: `${accent}10`,
-                }}
-              >
-                {tag}
-              </AnimatedText>
-            ))}
+
+          {/* Tags + Button row */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+              gap: "1rem",
+            }}
+          >
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+              {service.tags.map((tag, ti) => (
+                <AnimatedText
+                  key={tag}
+                  langKey={lang}
+                  delay={0.15 + ti * 0.04}
+                  style={{
+                    fontSize: "0.75rem",
+                    fontWeight: 600,
+                    padding: "0.375rem 0.875rem",
+                    borderRadius: "50px",
+                    border: `1px solid ${accent}40`,
+                    color: accent,
+                    letterSpacing: "0.02em",
+                    background: `${accent}10`,
+                  }}
+                >
+                  {tag}
+                </AnimatedText>
+              ))}
+            </div>
+
+            {/* CTA кнопка */}
+            <button
+              onClick={handleOrder}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "10px 20px",
+                borderRadius: "50px",
+                fontSize: "0.8rem",
+                fontWeight: 700,
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "inherit",
+                background: accent,
+                color: isDark ? "#e8f5ee" : "#ffffff",
+                transition: "transform 0.2s, box-shadow 0.2s",
+                boxShadow: `0 4px 16px ${accent}40`,
+                whiteSpace: "nowrap",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.05)";
+                e.currentTarget.style.boxShadow = `0 6px 24px ${accent}60`;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.boxShadow = `0 4px 16px ${accent}40`;
+              }}
+            >
+              {btnLabel[lang] || btnLabel.ru}
+              <ArrowRightIcon size={13} color="currentColor" />
+            </button>
           </div>
         </div>
       </motion.div>
@@ -195,6 +270,7 @@ export default function Services() {
               total={t.services.items.length}
               accent={accents[i]}
               lang={lang}
+              serviceValue={serviceValues[i]}
             />
           ))}
         </div>

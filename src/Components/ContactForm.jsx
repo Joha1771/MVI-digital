@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -8,6 +8,15 @@ import { AnimatedText, AnimatedBlock } from "../i18n/AnimatedText";
 
 export default function ContactForm() {
   const [done, setDone] = useState(false);
+  // Слушаем событие prefill от карточки услуги
+  useEffect(() => {
+    const handler = (e) => {
+      f.setFieldValue("service", e.detail);
+    };
+    window.addEventListener("prefill-service", handler);
+    return () => window.removeEventListener("prefill-service", handler);
+  }, []);
+
   const { t, lang } = useTranslation();
   const e = t.contact.errors;
 
