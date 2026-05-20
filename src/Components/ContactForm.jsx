@@ -1,22 +1,169 @@
-import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { PhoneIcon, MailIcon, CheckIcon, ArrowRightIcon } from "./Icons";
 import { useTranslation } from "../i18n/useTranslation";
 import { AnimatedText, AnimatedBlock } from "../i18n/AnimatedText";
 
-export default function ContactForm() {
-  const [done, setDone] = useState(false);
-  // Слушаем событие prefill от карточки услуги
+// Кастомный красивый Dropdown
+function CustomSelect({
+  options,
+  value,
+  onChange,
+  onBlur,
+  placeholder,
+  hasError,
+  prefilled,
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  const selected = options.find((o) => o.value === value);
+
   useEffect(() => {
     const handler = (e) => {
-      f.setFieldValue("service", e.detail);
+      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
     };
-    window.addEventListener("prefill-service", handler);
-    return () => window.removeEventListener("prefill-service", handler);
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  return (
+    <div ref={ref} style={{ position: "relative" }}>
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        onBlur={onBlur}
+        style={{
+          width: "100%",
+          padding: "12px 16px",
+          borderRadius: "12px",
+          fontSize: "14px",
+          fontFamily: "inherit",
+          fontWeight: 500,
+          outline: "none",
+          cursor: "pointer",
+          background: prefilled ? "rgba(26,158,92,0.06)" : "var(--bg)",
+          color: selected ? "var(--text)" : "var(--text-muted)",
+          border: hasError
+            ? "1px solid #ef4444"
+            : prefilled
+              ? "1px solid rgba(26,158,92,0.5)"
+              : open
+                ? "1px solid #1A9E5C"
+                : "1px solid var(--border-md)",
+          transition: "all 0.2s",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          gap: "8px",
+          textAlign: "left",
+        }}
+      >
+        <span>{selected ? selected.label : placeholder}</span>
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 14 14"
+          fill="none"
+          style={{
+            transform: open ? "rotate(180deg)" : "rotate(0)",
+            transition: "transform 0.2s",
+            flexShrink: 0,
+          }}
+        >
+          <path
+            d="M2 5l5 5 5-5"
+            stroke="var(--text-muted)"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0, y: -8, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -8, scale: 0.97 }}
+            transition={{ duration: 0.15 }}
+            style={{
+              position: "absolute",
+              top: "calc(100% + 6px)",
+              left: 0,
+              right: 0,
+              zIndex: 100,
+              background: "var(--card-bg)",
+              border: "1px solid var(--border-md)",
+              borderRadius: "12px",
+              overflow: "hidden",
+              boxShadow:
+                "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
+            }}
+          >
+            {options.map((o, i) => (
+              <button
+                key={o.value}
+                type="button"
+                onClick={() => {
+                  onChange(o.value);
+                  setOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  padding: "11px 16px",
+                  fontSize: "14px",
+                  fontWeight: 500,
+                  fontFamily: "inherit",
+                  border: "none",
+                  cursor: "pointer",
+                  textAlign: "left",
+                  background:
+                    value === o.value ? "rgba(26,158,92,0.08)" : "transparent",
+                  color: value === o.value ? "#1A9E5C" : "var(--text)",
+                  borderBottom:
+                    i < options.length - 1 ? "1px solid var(--border)" : "none",
+                  transition: "background 0.15s",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
+                onMouseEnter={(e) => {
+                  if (value !== o.value)
+                    e.currentTarget.style.background = "var(--bg)";
+                }}
+                onMouseLeave={(e) => {
+                  if (value !== o.value)
+                    e.currentTarget.style.background = "transparent";
+                }}
+              >
+                {value === o.value && (
+                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                    <path
+                      d="M2 7l4 4 6-6"
+                      stroke="#1A9E5C"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                )}
+                {value !== o.value && <span style={{ width: 14 }} />}
+                {o.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+export default function ContactForm() {
+  const [done, setDone] = useState(false);
+  const [prefilled, setPrefilled] = useState(false);
   const { t, lang } = useTranslation();
   const e = t.contact.errors;
 
@@ -35,6 +182,17 @@ export default function ContactForm() {
     enableReinitialize: true,
   });
 
+  // Слушаем prefill от карточки услуги
+  useEffect(() => {
+    const handler = (ev) => {
+      f.setFieldValue("service", ev.detail);
+      setPrefilled(true);
+      setTimeout(() => setPrefilled(false), 4000);
+    };
+    window.addEventListener("prefill-service", handler);
+    return () => window.removeEventListener("prefill-service", handler);
+  }, []);
+
   const inputStyle = (field) => ({
     width: "100%",
     padding: "12px 16px",
@@ -51,6 +209,12 @@ export default function ContactForm() {
         : "1px solid var(--border-md)",
     transition: "border 0.2s, background 0.35s, color 0.35s",
   });
+
+  const hintLabels = {
+    ru: "Услуга выбрана из каталога",
+    uz: "Xizmat katalogdan tanlandi",
+    en: "Service selected from catalog",
+  };
 
   return (
     <section
@@ -76,7 +240,7 @@ export default function ContactForm() {
               fontSize: "0.7rem",
               fontWeight: 700,
               letterSpacing: "0.18em",
-              color: "var(--accent)",
+              color: "var(--accent2)",
               display: "block",
               marginBottom: "1rem",
             }}
@@ -131,6 +295,7 @@ export default function ContactForm() {
                 gap: "1.25rem",
               }}
             >
+              {/* Name */}
               <div>
                 <label
                   style={{
@@ -175,6 +340,7 @@ export default function ContactForm() {
                 )}
               </div>
 
+              {/* Phone */}
               <div>
                 <label
                   style={{
@@ -219,43 +385,79 @@ export default function ContactForm() {
                 )}
               </div>
 
+              {/* Service — кастомный dropdown */}
               <div>
-                <label
+                <div
                   style={{
-                    fontSize: "0.7rem",
-                    fontWeight: 700,
-                    letterSpacing: "0.15em",
-                    color: "var(--text-muted)",
-                    display: "block",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                     marginBottom: "0.5rem",
                   }}
                 >
-                  <AnimatedText langKey={lang} delay={0.2}>
-                    {t.contact.service}
-                  </AnimatedText>
-                </label>
-                <select
-                  name="service"
+                  <label
+                    style={{
+                      fontSize: "0.7rem",
+                      fontWeight: 700,
+                      letterSpacing: "0.15em",
+                      color: "var(--text-muted)",
+                    }}
+                  >
+                    <AnimatedText langKey={lang} delay={0.2}>
+                      {t.contact.service}
+                    </AnimatedText>
+                  </label>
+
+                  {/* Подсказка — появляется когда prefilled */}
+                  <AnimatePresence>
+                    {prefilled && (
+                      <motion.div
+                        initial={{ opacity: 0, x: 10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: 10 }}
+                        transition={{ duration: 0.25 }}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "5px",
+                          fontSize: "0.65rem",
+                          fontWeight: 600,
+                          color: "#1A9E5C",
+                          background: "rgba(26,158,92,0.08)",
+                          border: "1px solid rgba(26,158,92,0.2)",
+                          padding: "2px 8px",
+                          borderRadius: "20px",
+                        }}
+                      >
+                        <svg
+                          width="10"
+                          height="10"
+                          viewBox="0 0 10 10"
+                          fill="none"
+                        >
+                          <path
+                            d="M1.5 5l2.5 2.5 4.5-4.5"
+                            stroke="#1A9E5C"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                        {hintLabels[lang] || hintLabels.ru}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <CustomSelect
+                  options={t.contact.serviceOptions}
                   value={f.values.service}
-                  onChange={f.handleChange}
-                  onBlur={f.handleBlur}
-                  style={{
-                    ...inputStyle("service"),
-                    cursor: "pointer",
-                    color: f.values.service
-                      ? "var(--text)"
-                      : "var(--text-muted)",
-                  }}
-                >
-                  <option value="" disabled>
-                    {t.contact.servicePlaceholder}
-                  </option>
-                  {t.contact.serviceOptions.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(val) => f.setFieldValue("service", val)}
+                  onBlur={() => f.setFieldTouched("service", true)}
+                  placeholder={t.contact.servicePlaceholder}
+                  hasError={f.touched.service && f.errors.service}
+                  prefilled={prefilled && !!f.values.service}
+                />
                 {f.touched.service && f.errors.service && (
                   <p
                     style={{
@@ -380,7 +582,7 @@ export default function ContactForm() {
               gap: "6px",
             }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.color = "var(--accent)")
+              (e.currentTarget.style.color = "var(--accent2)")
             }
             onMouseLeave={(e) =>
               (e.currentTarget.style.color = "var(--text-sub)")
@@ -400,7 +602,7 @@ export default function ContactForm() {
               gap: "6px",
             }}
             onMouseEnter={(e) =>
-              (e.currentTarget.style.color = "var(--accent)")
+              (e.currentTarget.style.color = "var(--accent2)")
             }
             onMouseLeave={(e) =>
               (e.currentTarget.style.color = "var(--text-sub)")
