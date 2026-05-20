@@ -2,11 +2,28 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import { createClient } from "@supabase/supabase-js";
 import { PhoneIcon, MailIcon, CheckIcon, ArrowRightIcon } from "./Icons";
 import { useTranslation } from "../i18n/useTranslation";
 import { AnimatedText, AnimatedBlock } from "../i18n/AnimatedText";
 
-// Кастомный красивый Dropdown
+const supabase = createClient(
+  import.meta.env.VITE_SUPABASE_URL,
+  import.meta.env.VITE_SUPABASE_ANON_KEY,
+);
+
+const sendTelegram = async (name, phone, service) => {
+  const token = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+  const chatId = import.meta.env.VITE_TELEGRAM_CHAT_ID;
+  const text = `🔔 *Новая заявка с сайта!*\n\n👤 *Имя:* ${name}\n📱 *Телефон:* ${phone}\n💼 *Услуга:* ${service}\n🕐 *Время:* ${new Date().toLocaleString("ru-RU", { timeZone: "Asia/Tashkent" })}`;
+  await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ chat_id: chatId, text, parse_mode: "Markdown" }),
+  });
+};
+
+// Кастомный Dropdown
 function CustomSelect({
   options,
   value,
@@ -99,8 +116,7 @@ function CustomSelect({
               border: "1px solid var(--border-md)",
               borderRadius: "12px",
               overflow: "hidden",
-              boxShadow:
-                "0 8px 32px rgba(0,0,0,0.12), 0 2px 8px rgba(0,0,0,0.08)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.12)",
             }}
           >
             {options.map((o, i) => (
@@ -139,7 +155,7 @@ function CustomSelect({
                     e.currentTarget.style.background = "transparent";
                 }}
               >
-                {value === o.value && (
+                {value === o.value ? (
                   <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                     <path
                       d="M2 7l4 4 6-6"
@@ -149,8 +165,9 @@ function CustomSelect({
                       strokeLinejoin="round"
                     />
                   </svg>
+                ) : (
+                  <span style={{ width: 14 }} />
                 )}
-                {value !== o.value && <span style={{ width: 14 }} />}
                 {o.label}
               </button>
             ))}
@@ -163,9 +180,22 @@ function CustomSelect({
 
 export default function ContactForm() {
   const [done, setDone] = useState(false);
+  const [sending, setSending] = useState(false);
   const [prefilled, setPrefilled] = useState(false);
+  const [sendError, setSendError] = useState("");
   const { t, lang } = useTranslation();
   const e = t.contact.errors;
+
+  const serviceLabels = {
+    site: { ru: "Сайт", uz: "Sayt", en: "Website" },
+    app: { ru: "Приложение", uz: "Ilova", en: "Application" },
+    fintech: {
+      ru: "Финтех-решение",
+      uz: "Fintech yechimi",
+      en: "Fintech solution",
+    },
+    other: { ru: "Другое", uz: "Boshqa", en: "Other" },
+  };
 
   const schema = Yup.object({
     name: Yup.string().min(2, e.nameMin).required(e.nameRequired),
@@ -178,11 +208,36 @@ export default function ContactForm() {
   const f = useFormik({
     initialValues: { name: "", phone: "", service: "" },
     validationSchema: schema,
-    onSubmit: () => setDone(true),
+    onSubmit: async (values) => {
+      setSending(true);
+      setSendError("");
+      try {
+        // 1. Сохраняем в Supabase
+        const { error } = await supabase.from("leads").insert({
+          name: values.name,
+          phone: values.phone,
+          service: serviceLabels[values.service]?.[lang] || values.service,
+        });
+        if (error) throw error;
+
+        // 2. Отправляем в Telegram
+        await sendTelegram(
+          values.name,
+          values.phone,
+          serviceLabels[values.service]?.[lang] || values.service,
+        );
+
+        setDone(true);
+      } catch (err) {
+        setSendError("Ошибка отправки. Попробуйте ещё раз.");
+        console.error(err);
+      } finally {
+        setSending(false);
+      }
+    },
     enableReinitialize: true,
   });
 
-  // Слушаем prefill от карточки услуги
   useEffect(() => {
     const handler = (ev) => {
       f.setFieldValue("service", ev.detail);
@@ -295,7 +350,6 @@ export default function ContactForm() {
                 gap: "1.25rem",
               }}
             >
-              {/* Name */}
               <div>
                 <label
                   style={{
@@ -340,7 +394,6 @@ export default function ContactForm() {
                 )}
               </div>
 
-              {/* Phone */}
               <div>
                 <label
                   style={{
@@ -385,7 +438,6 @@ export default function ContactForm() {
                 )}
               </div>
 
-              {/* Service — кастомный dropdown */}
               <div>
                 <div
                   style={{
@@ -407,8 +459,6 @@ export default function ContactForm() {
                       {t.contact.service}
                     </AnimatedText>
                   </label>
-
-                  {/* Подсказка — появляется когда prefilled */}
                   <AnimatePresence>
                     {prefilled && (
                       <motion.div
@@ -448,7 +498,6 @@ export default function ContactForm() {
                     )}
                   </AnimatePresence>
                 </div>
-
                 <CustomSelect
                   options={t.contact.serviceOptions}
                   value={f.values.service}
@@ -472,30 +521,47 @@ export default function ContactForm() {
                 )}
               </div>
 
+              {sendError && (
+                <p
+                  style={{
+                    color: "#ef4444",
+                    fontSize: "0.8rem",
+                    fontWeight: 500,
+                    textAlign: "center",
+                  }}
+                >
+                  {sendError}
+                </p>
+              )}
+
               <button
                 type="submit"
+                disabled={sending}
                 style={{
                   padding: "14px",
                   borderRadius: "12px",
                   fontWeight: 700,
                   fontSize: "0.875rem",
-                  cursor: "pointer",
+                  cursor: sending ? "not-allowed" : "pointer",
                   border: "none",
                   marginTop: "0.5rem",
                   background: "#1A9E5C",
                   color: "#ffffff",
-                  transition: "transform 0.2s, box-shadow 0.2s",
+                  transition: "transform 0.2s, box-shadow 0.2s, opacity 0.2s",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   gap: "8px",
                   boxShadow: "0 4px 16px rgba(26,158,92,0.3)",
                   fontFamily: "inherit",
+                  opacity: sending ? 0.7 : 1,
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "scale(1.02)";
-                  e.currentTarget.style.boxShadow =
-                    "0 6px 24px rgba(26,158,92,0.5)";
+                  if (!sending) {
+                    e.currentTarget.style.transform = "scale(1.02)";
+                    e.currentTarget.style.boxShadow =
+                      "0 6px 24px rgba(26,158,92,0.5)";
+                  }
                 }}
                 onMouseLeave={(e) => {
                   e.currentTarget.style.transform = "scale(1)";
@@ -503,10 +569,29 @@ export default function ContactForm() {
                     "0 4px 16px rgba(26,158,92,0.3)";
                 }}
               >
-                <AnimatedText langKey={lang} delay={0.25}>
-                  {t.contact.submit}
-                </AnimatedText>
-                <ArrowRightIcon size={15} color="currentColor" />
+                {sending ? (
+                  <>
+                    <span
+                      style={{
+                        display: "inline-block",
+                        width: 14,
+                        height: 14,
+                        border: "2px solid rgba(255,255,255,0.3)",
+                        borderTopColor: "#fff",
+                        borderRadius: "50%",
+                        animation: "spin 0.8s linear infinite",
+                      }}
+                    />
+                    Отправляем...
+                  </>
+                ) : (
+                  <>
+                    <AnimatedText langKey={lang} delay={0.25}>
+                      {t.contact.submit}
+                    </AnimatedText>
+                    <ArrowRightIcon size={15} color="currentColor" />
+                  </>
+                )}
               </button>
             </form>
           ) : (
@@ -515,7 +600,10 @@ export default function ContactForm() {
               animate={{ opacity: 1, scale: 1 }}
               style={{ textAlign: "center", padding: "2.5rem 0" }}
             >
-              <div
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, delay: 0.1 }}
                 style={{
                   width: 64,
                   height: 64,
@@ -529,7 +617,7 @@ export default function ContactForm() {
                 }}
               >
                 <CheckIcon size={28} color="#1A9E5C" />
-              </div>
+              </motion.div>
               <h3
                 style={{
                   fontWeight: 700,
@@ -549,10 +637,26 @@ export default function ContactForm() {
                   fontSize: "0.875rem",
                   color: "var(--text-sub)",
                   fontWeight: 500,
+                  marginBottom: "1rem",
                 }}
               >
                 {t.contact.successDesc}
               </AnimatedBlock>
+              <div
+                style={{
+                  fontSize: "0.8rem",
+                  color: "var(--text-muted)",
+                  fontWeight: 500,
+                }}
+              >
+                {
+                  {
+                    ru: "Уведомление отправлено нашей команде ✓",
+                    uz: "Jamoamizga xabar yuborildi ✓",
+                    en: "Notification sent to our team ✓",
+                  }[lang]
+                }
+              </div>
             </motion.div>
           )}
         </motion.div>
@@ -612,6 +716,7 @@ export default function ContactForm() {
           </a>
         </motion.div>
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </section>
   );
 }
