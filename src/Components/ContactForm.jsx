@@ -712,7 +712,7 @@ export default function ContactForm() {
               (e.currentTarget.style.color = "var(--text-sub)")
             }
           >
-            <MailIcon size={14} color="currentColor" /> mvidigit@gmail.com
+            <MailIcon size={14} color="currentColor" /> mvi.digit@gmail.com
           </a>
         </motion.div>
       </div>
