@@ -259,35 +259,53 @@ export default function Footer() {
             borderTop: "1px solid rgba(232,245,238,0.1)",
             paddingTop: "2rem",
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "1rem",
+            flexDirection: "column",
+            gap: "0.75rem",
           }}
         >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              flexWrap: "wrap",
+              gap: "1rem",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 500,
+                color: "rgba(232,245,238,0.45)",
+              }}
+            >
+              © {new Date().getFullYear()} MVI Digital.{" "}
+              <AnimatedText langKey={lang} delay={0}>
+                {t.footer.rights}
+              </AnimatedText>
+            </p>
+            <AnimatedText
+              langKey={lang}
+              delay={0.1}
+              style={{
+                fontSize: "0.75rem",
+                fontWeight: 500,
+                color: "rgba(232,245,238,0.45)",
+              }}
+            >
+              {t.footer.resident}
+            </AnimatedText>
+          </div>
           <p
             style={{
-              fontSize: "0.75rem",
-              fontWeight: 500,
-              color: "rgba(232,245,238,0.45)",
+              fontSize: "0.65rem",
+              fontWeight: 400,
+              color: "rgba(232,245,238,0.25)",
+              letterSpacing: "0.04em",
             }}
           >
-            © {new Date().getFullYear()} MVI Digital.{" "}
-            <AnimatedText langKey={lang} delay={0}>
-              {t.footer.rights}
-            </AnimatedText>
+            MVI DIGITAL MAS&apos;ULIYATI CHEKLANGAN JAMIYAT
           </p>
-          <AnimatedText
-            langKey={lang}
-            delay={0.1}
-            style={{
-              fontSize: "0.75rem",
-              fontWeight: 500,
-              color: "rgba(232,245,238,0.45)",
-            }}
-          >
-            {t.footer.resident}
-          </AnimatedText>
         </div>
       </div>
     </footer>
